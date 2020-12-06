@@ -108,7 +108,12 @@ def simplex_min():
     json_data = json.loads(params.decode('utf-8'))
     metaData = json_data["meta"]
 
-    data_min = np.loadtxt(metaData, dtype=np.float)
+    rawMetaData = metaData.replace('#', '\n')
+    filename = './simplex.txt'
+    with open(filename, 'w') as file_object:
+        file_object.write(rawMetaData)
+
+    data_min = np.loadtxt(filename, dtype=np.float)
     value = Simplex.min(data_min)
 
     result = {
@@ -132,7 +137,12 @@ def simplex_max():
     json_data = json.loads(params.decode('utf-8'))
     metaData = json_data["meta"]
 
-    data_max = np.loadtxt(metaData, dtype=np.float)
+    rawMetaData = metaData.replace('#', '\n')
+    filename = './simplex.txt'
+    with open(filename, 'w') as file_object:
+        file_object.write(rawMetaData)
+
+    data_max = np.loadtxt(rawMetaData, dtype=np.float)
     value = Simplex.max(data_max)
 
     result = {
@@ -151,4 +161,6 @@ def simplex_max():
 
 
 if __name__ == '__main__':
+    data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
+    print(data_min)
     app.run(host="0.0.0.0")
