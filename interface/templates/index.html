@@ -60,7 +60,7 @@
 									<div class="row">
 										<div class="col-12 form-line">
 											<div class="form-group">
-												<textarea id="param" placeholder="请写出数据矩阵..." rows="8" cols="20" maxlength="200" style="text-transform: none !important;" class="form-control"></textarea>
+												<textarea id="param" placeholder="输入数据矩阵..." rows="8" cols="20" maxlength="200" style="text-transform: none !important;" class="form-control"></textarea>
 											</div>
 										</div>
 									</div>
@@ -148,7 +148,32 @@
 				$('textarea').val('')
 			}
 			function simplexMax(){
-
+				console.log($('#param').val())
+				var rawText=$('#param').val()
+				let reg=new RegExp('\n','g')//g代表全部
+				var resultText = rawText.replace(reg, '#')
+				console.log(resultText)
+				var params={
+					meta:resultText
+				}
+				$.ajax({
+					type: "POST",
+					url: 'http://127.0.0.1:5000/simplexMax',
+					contentType: "application/json; charset=utf-8",
+					data: JSON.stringify(params),
+					success: function (resp) {
+						// data.success(resp)
+						// console.log(resp["data"])
+						console.log(resp["info"])
+						var infor = resp["info"]
+						let reg=new RegExp('#','g')//g代表全部
+						var resultText = infor.replace(reg, '\n')
+						$('#resultArea').val(resultText)
+					},
+					error: function (err) {
+						// data.error(err)
+					}
+				})
 			}
 			function simplexMin() {
 				console.log($('#param').val())

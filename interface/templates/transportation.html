@@ -70,7 +70,7 @@
 					</div>
 					<div class="col-lg-2 col-md-2 col-xs-2">
 						<div class="sub-item-box">
-							<button type="submit" class="btn btn-common btn-effect">运输问题</button>
+							<button type="submit" class="btn btn-common btn-effect" onclick="tranProblem()">运输问题</button>
 						</div>
 						<div class="sub-item-box">
 							<button onclick="clearText()" class="btn btn-common btn-effect">重新输入</button>
@@ -144,10 +144,13 @@
 			function clearText() {
 				$('textarea').val('')
 			}
+			function tranProblem() {
+				
+			}
 			function simplexMin() {
 				console.log($('#param').val())
 				var rawText=$('#param').val()
-				let reg=new RegExp('\n','g')//g代表全部
+				let reg=new RegExp('\n','g')    //g代表全部
 				var resultText = rawText.replace(reg, '#')
 				console.log(resultText)
 				var params={

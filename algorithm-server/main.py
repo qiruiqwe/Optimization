@@ -67,7 +67,7 @@ class Simplex(object):
             fit = np.dot(b, c_b)
             # 2.判决数都 < 0，结束循环
             if min(distinguish_number) > 0:
-                return fit
+                return fit, base_list, b
             else:
                 # 3.换入列号
                 column = no_base_list[distinguish_number.index(min(distinguish_number))]
@@ -80,7 +80,7 @@ class Simplex(object):
                         temp.append(a / c)
                 if min(temp) == float('inf'):
                     # 4.1.没有可换出列
-                    return fit
+                    return fit, base_list, b
                 else:
                     row_index = temp.index(min(temp))
                     # 更新data
@@ -92,8 +92,7 @@ class Simplex(object):
 
     @staticmethod
     def formatString(data, flag, value, base_list, base_value):
-        # flag = 0 最小值
-        # flag = 1 最大值
+        # flag = 0 最小值  1 最大值
         v_name = []
         (width, length) = data.shape
         for i in range(length):
@@ -140,18 +139,6 @@ class Simplex(object):
         return all_message
 
 
-'''
-    第一行为数据
-    其余行为约束
-'''
-# data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
-# value = Simplex.min(data_min)
-# print(value)
-# data_max = np.loadtxt("data-3.1.3.txt", dtype=np.float)
-# value = Simplex.max(data_max)
-# print(value)
-
-
 @app.route('/simplexMin', methods=['GET', 'POST'])
 def simplex_min():
     params = request.get_data()
@@ -189,19 +176,23 @@ def simplex_max():
     params = request.get_data()
     json_data = json.loads(params.decode('utf-8'))
     metaData = json_data["meta"]
-
+    print(metaData)
     rawMetaData = metaData.replace('#', '\n')
     filename = './simplex.txt'
     with open(filename, 'w') as file_object:
         file_object.write(rawMetaData)
 
-    data_max = np.loadtxt(rawMetaData, dtype=np.float)
-    value = Simplex.max(data_max)
-
+    dataMax = np.loadtxt(filename, dtype=np.float)
+    print(dataMax)
+    value, base_list, base_value = Simplex.max(dataMax)
+    dataMax = np.loadtxt(filename, dtype=np.float)
+    info = Simplex.formatString(dataMax, 1, value, base_list, base_value)
+    print(info)
     result = {
         'status': 20000,
         'message': '这里你看到的是单纯形法',
-        "data": value
+        "data": value,
+        "info": info
     }
     # cur.close()
     # conn.close()
@@ -214,9 +205,22 @@ def simplex_max():
 
 
 if __name__ == '__main__':
-    data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
+    '''
+        第一行为数据
+        其余行为约束
+    '''
+    # data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
+    # value = Simplex.min(data_min)
+    # print(value)
+    # data_max = np.loadtxt("data-3.1.3.txt", dtype=np.float)
+    # value = Simplex.max(data_max)
+    # print(value)
+
+    # data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
+    data_max = np.loadtxt("data-3.1.3.txt", dtype=np.float)
+    # value = Simplex.max(data_max)
     # print(data_min)
-    value, base_list, base_value = Simplex.min(data_min)
-    info = Simplex.formatString(data_min, 0, value, base_list, base_value)
+    value, base_list, base_value = Simplex.max(data_max)
+    info = Simplex.formatString(data_max, 1, value, base_list, base_value)
     print(info)
     app.run(host="0.0.0.0")
