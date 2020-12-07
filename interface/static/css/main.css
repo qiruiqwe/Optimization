@@ -526,7 +526,7 @@ button:focus {
 
 .navbar-expand-md .navbar-nav .nav-link {
   color: #fff;
-  font-size: 14px;
+  font-size: 8px;
   padding: 5px 0px;
   margin-left: 30px;
   position: relative;
@@ -2275,7 +2275,7 @@ footer .menu li a:hover {
 
 #copyright {
   background-color: #ffffff;
-  padding: 20px 0 10px;
+  padding: 15px 0 10px;
   border-top: 1px solid #eaeaea;
   color: #546E7A;
 }

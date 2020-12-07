@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+	<head th:replace="_fragments :: head(~{::title})">
+		<meta charset="utf-8">
+		<title>最优化</title>
+		<link rel="stylesheet" href="../static/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../static/css/line-icons.css">
+		<link rel="stylesheet" href="../static/css/owl.carousel.css">
+		<link rel="stylesheet" href="../static/css/owl.theme.css">
+		<link rel="stylesheet" href="../static/css/nivo-lightbox.css">
+		<link rel="stylesheet" href="../static/css/magnific-popup.css">
+		<link rel="stylesheet" href="../static/css/animate.css">
+		<link rel="stylesheet" href="../static/css/menu_sideslide.css">
+		<link rel="stylesheet" href="../static/css/main.css">
+		<link rel="stylesheet" href="../static/css/responsive.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+	</head>
+	<body>
+		<!-- Header Section Start -->
+		<header id="slider-area">
+			<nav class="navbar navbar-expand-lg fixed-top scrolling-navbar  bg-white" th:replace="_fragments :: menu">
+				<div class="container">
+					<a class="navbar-brand" href="#" style="color: #F97794;"><span class="lni-bulb"></span>最优化</a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+					 aria-expanded="false" aria-label="Toggle navigation">
+						<i class="lni-menu"></i>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarCollapse">
+						<ul class="navbar-nav mr-auto w-100 justify-content-end">
+							<li class="nav-item">
+								<a class="nav-link page-scroll"  href="index.html">单纯型</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link page-scroll" href="transportation.html">运输问题</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<!-- Header Section End -->
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<!-- Login Start -->
+		<div id="subscribe" class="section">
+			<div class="container">
+				<div class="row justify-content-between">
+					<div class="col-lg-5 col-md-5 col-xs-5">
+						<div class="subscribe-form ">
+							<div class="form-wrapper">
+								<div class="sub-title text-center">
+									<H3>矩阵数据</H3>
+									<p></p>
+								</div>
+								<form th:action="@{/login}" method="post">
+									<div class="row">
+										<div class="col-12 form-line">
+											<div class="form-group">
+												<textarea id="param" placeholder="请写出数据矩阵..." rows="8" cols="20" maxlength="200" style="text-transform: none !important;" class="form-control"></textarea>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-2 col-md-2 col-xs-2">
+						<div class="sub-item-box">
+							<button type="submit" class="btn btn-common btn-effect">运输问题</button>
+						</div>
+						<div class="sub-item-box">
+							<button onclick="clearText()" class="btn btn-common btn-effect">重新输入</button>
+						</div>
+					</div>
+
+					<div class="col-lg-5 col-md-5 col-xs-5">
+						<div class="subscribe-form ">
+							<div class="form-wrapper">
+								<div class="sub-title text-center">
+									<h3>输出数据</h3>
+									<p></p>
+								</div>
+								<div class="row">
+									<div class="col-12 form-line">
+										<div class="form-group">
+											<textarea id="resultArea" placeholder="数据输出.." rows="8" cols="20" maxlength="200" disabled="disabled" class="form-control"></textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Login End -->
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<!-- Footer Section Start -->
+		<footer th:replace="_fragments :: footer">
+			<!-- Copyright Start  -->
+			<div id="copyright">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="site-info float-left">
+								<p>山东师范大学 &emsp;巫_月</p>
+							</div>
+							<div class="float-right">
+								<ul class="nav nav-inline">
+									<li class="nav-item">
+										<a class="nav-link active" target="_blank"  href="http://ischedulings.com/index.html">教师主页</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link" target="_blank" href="https://github.com/qiruiqwe">GitHub</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link" target="_blank" href="https://blog.csdn.net/qq_40178343?spm=1010.2135.3001.5113">CSDN</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Copyright End -->
+		
+		</footer>
+		<!-- Footer Section End -->
+		<script src="../static/js/wow.js" th:src="@{/js/wow.js}"></script>
+		<script src="../static/js/jquery-min.js"  th:src="@{/js/jquery-min.js}"></script>
+		<script src="../static/js/bootstrap.min.js"  th:src="@{/js/bootstrap.min.js}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+		<!--/*/</th:block>/*/-->
+		<script type="text/javascript" language="JavaScript">
+			function clearText() {
+				$('textarea').val('')
+			}
+			function simplexMin() {
+				console.log($('#param').val())
+				var rawText=$('#param').val()
+				let reg=new RegExp('\n','g')//g代表全部
+				var resultText = rawText.replace(reg, '#')
+				console.log(resultText)
+				var params={
+					meta:resultText
+				}
+				$.ajax({
+					type: "POST",
+					url: 'http://127.0.0.1:5000/simplexMin',
+					contentType: "application/json; charset=utf-8",
+					data: JSON.stringify(params),
+					success: function (resp) {
+						// data.success(resp)
+						console.log(resp["data"])
+						console.log(resp["info"])
+						$('#resultArea').val(resp["info"])
+					},
+					error: function (err) {
+						// data.error(err)
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

@@ -9,7 +9,7 @@ function createWindow () {
     }
   })
 
-  win.loadFile('templates/test.html')
+  win.loadFile('templates/index.html')
 }
 
 app.whenReady().then(createWindow)

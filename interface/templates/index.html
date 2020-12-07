@@ -25,6 +25,16 @@
 					 aria-expanded="false" aria-label="Toggle navigation">
 						<i class="lni-menu"></i>
 					</button>
+					<div class="collapse navbar-collapse" id="navbarCollapse">
+						<ul class="navbar-nav mr-auto w-100 justify-content-end">
+							<li class="nav-item">
+								<a class="nav-link page-scroll" href="index.html">单纯型</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link page-scroll" href="transportation.html">运输问题</a>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</nav>
 		</header>
@@ -60,10 +70,10 @@
 					</div>
 					<div class="col-lg-2 col-md-2 col-xs-2">
 						<div class="sub-item-box">
-							<button type="submit" class="btn btn-common btn-effect" onclick="simplexMin()">单纯形法</button>
+							<button type="submit" class="btn btn-common btn-effect" onclick="simplexMin()">求最小值</button>
 						</div>
 						<div class="sub-item-box">
-							<button type="submit" class="btn btn-common btn-effect">运输问题</button>
+							<button type="submit" class="btn btn-common btn-effect" onclick="simplexMax()">求最大值</button>
 						</div>
 						<div class="sub-item-box">
 							<button onclick="clearText()" class="btn btn-common btn-effect">重新输入</button>
@@ -109,16 +119,13 @@
 							<div class="float-right">
 								<ul class="nav nav-inline">
 									<li class="nav-item">
-										<a class="nav-link active" href="#">关于</a>
+										<a class="nav-link active" target="_blank"  href="http://ischedulings.com/index.html">教师主页</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="#">QQ</a>
+										<a class="nav-link" target="_blank" href="https://github.com/qiruiqwe">GitHub</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="#">CSDN</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="#">博客</a>
+										<a class="nav-link" target="_blank" href="https://blog.csdn.net/qq_40178343?spm=1010.2135.3001.5113">CSDN</a>
 									</li>
 								</ul>
 							</div>
@@ -140,6 +147,9 @@
 			function clearText() {
 				$('textarea').val('')
 			}
+			function simplexMax(){
+
+			}
 			function simplexMin() {
 				console.log($('#param').val())
 				var rawText=$('#param').val()
@@ -157,7 +167,11 @@
 					success: function (resp) {
 						// data.success(resp)
 						console.log(resp["data"])
-						$('#resultArea').val(resp["data"])
+						console.log(resp["info"])
+						var infor = resp["info"]
+						let reg=new RegExp('#','g')//g代表全部
+						var resultText = infor.replace(reg, '\n')
+						$('#resultArea').val(resultText)
 					},
 					error: function (err) {
 						// data.error(err)

@@ -4,7 +4,7 @@
 # @desc :
 import numpy as np
 
-from flask import Flask,request,jsonify,make_response
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import json
 
@@ -30,7 +30,8 @@ class Simplex(object):
             fit = np.dot(b, c_b)
             # 2.判决数都 < 0，结束循环
             if max(distinguish_number) < 0:
-                return fit
+                # base_list是x的序号的值，b是对应的x的值
+                return fit, base_list, b
             else:
                 # 3.换入列号
                 column = no_base_list[distinguish_number.index(max(distinguish_number))]
@@ -43,7 +44,7 @@ class Simplex(object):
                         temp.append(a / c)
                 if min(temp) == float('inf'):
                     # 4.1.没有可换出列
-                    return fit
+                    return fit, base_list, b
                 else:
                     row_index = temp.index(min(temp))
                     # 更新data
@@ -89,6 +90,55 @@ class Simplex(object):
                     for i in [x for x in range(1, width) if x != row_index]:
                         data[i, :] += (-data[i, column] * data[row_index, :])
 
+    @staticmethod
+    def formatString(data, flag, value, base_list, base_value):
+        # flag = 0 最小值
+        # flag = 1 最大值
+        v_name = []
+        (width, length) = data.shape
+        for i in range(length):
+            v_name.append('x'+str(i+1))
+        # print(v_name)
+        if flag == 0:
+            message = 'min '
+            param = "最小值为:"
+        else:
+            message = 'max '
+            param = "最大值为:"
+        for j in range(length - 1):
+            if data[0][j] == 0:
+                message = message + "   "
+            else:
+                message = message + str(int(data[0][j])) + '*' + v_name[j]
+            if data[0][j+1] > 0:
+                message = message + '+'
+            elif data[0][j+1] == 0:
+                pass
+        all_message = message + '#'
+        for i in range(1, width):
+            message = ''
+            for j in range(length-1):
+                if data[i][j] == 0:
+                    message = message + "     "
+                else:
+                    message = message + str(int(data[i][j])) + '*' + v_name[j]
+                if data[i][j + 1] > 0 and (j+1) != (length-1):
+                    message = message + '+'
+                elif data[i][j + 1] == 0:
+                    pass
+            message = message + ' = ' + str(int(data[i][length-1]))
+            all_message = all_message + message + "#"
+        all_message += '#'
+        all_message = all_message + param + str(value) + '#'
+        result = ''
+        print(base_list)
+        print(base_value)
+        for i in zip(base_list, base_value):
+            result += v_name[i[0]] +' = ' + str(i[1]) + '#'
+        all_message = all_message + result
+        print(all_message)
+        return all_message
+
 
 '''
     第一行为数据
@@ -102,7 +152,7 @@ class Simplex(object):
 # print(value)
 
 
-@app.route('/simplexMin',methods=['GET','POST'])
+@app.route('/simplexMin', methods=['GET', 'POST'])
 def simplex_min():
     params = request.get_data()
     json_data = json.loads(params.decode('utf-8'))
@@ -112,14 +162,17 @@ def simplex_min():
     filename = './simplex.txt'
     with open(filename, 'w') as file_object:
         file_object.write(rawMetaData)
-
-    data_min = np.loadtxt(filename, dtype=np.float)
-    value = Simplex.min(data_min)
-
+    dataMin = np.loadtxt(filename, dtype=np.float)
+    # print(data_min)
+    value, base_list, base_value = Simplex.min(dataMin)
+    dataMin = np.loadtxt(filename, dtype=np.float)
+    info = Simplex.formatString(dataMin, 0, value, base_list, base_value)
+    print(info)
     result = {
         'status': 20000,
         'message': '这里你看到的是单纯形法',
-        "data": value
+        "data": value,
+        "info": info
     }
     # cur.close()
     # conn.close()
@@ -131,7 +184,7 @@ def simplex_min():
     return response
 
 
-@app.route('/simplexMax',methods=['GET','POST'])
+@app.route('/simplexMax', methods=['GET', 'POST'])
 def simplex_max():
     params = request.get_data()
     json_data = json.loads(params.decode('utf-8'))
@@ -162,5 +215,8 @@ def simplex_max():
 
 if __name__ == '__main__':
     data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
-    print(data_min)
+    # print(data_min)
+    value, base_list, base_value = Simplex.min(data_min)
+    info = Simplex.formatString(data_min, 0, value, base_list, base_value)
+    print(info)
     app.run(host="0.0.0.0")
