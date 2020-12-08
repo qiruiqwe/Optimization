@@ -40,15 +40,41 @@ class TranProblem(object):
 
 
 
-
-
-
-
-
-
-
 if __name__ == '__main__':
-    fileName = "transProblem-2.txt"
+    import transportation_problem as tp
+    fileName = "transProblem-3.txt"
     trans_data = np.loadtxt(fileName, dtype=np.float)
-    transProblem = TranProblem(trans_data)
-    transProblem.initSolution(trans_data)
+    # transProblem = TranProblem(trans_data)
+    # transProblem.initSolution(trans_data)
+    (width, length) = trans_data.shape
+    # 产地数组
+    product = ['A'+str(i) for i in range(1, width)]
+    # print(product)
+    # 销地名称数组
+    sale = ['B'+str(i) for i in range(1, length)]
+
+    # print(sale)
+    s = [(product[i], trans_data[i, length-1]) for i in range(width-1)]
+    d = [(sale[i], trans_data[width-1, i]) for i in range(length-1)]
+    print(s)
+    print(d)
+    str =''
+    for i in s:
+        str += '%4s %3d\t' % (i[0], i[1])
+    str += '\n'
+    for i in d:
+        str += '%4s %3d\t' % (i[0], i[1])
+    str += '\n'
+    print(str)
+    c = trans_data[:width-1, :length-1]
+    print(c)
+
+    # s = [('A1', 14), ('A2', 27), ('A3', 19)]
+    # d = [('B1', 22), ('B2', 13), ('B3', 12), ('B4', 13)]
+    # c = [[6, 7, 5, 3], [8, 4, 2, 7], [5, 9, 10, 6]]
+    p = tp.TransportationProblem(s, d, c)
+    r = p.solve()
+    print(r)
+    s = r.__str__()
+    value = s.replace('\n', '#')
+    print(value)

@@ -7,13 +7,9 @@ import numpy as np
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import json
+import transportation_problem as tp
 
 app = Flask(__name__)
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
 
 
 class Simplex(object):
@@ -108,9 +104,9 @@ class Simplex(object):
             if data[0][j] == 0:
                 message = message + "   "
             else:
-                message = message + str(int(data[0][j])) + '*' + v_name[j]
+                message = message + '%2s' % str(int(data[0][j])) + '*' + '%4s' % v_name[j]
             if data[0][j+1] > 0:
-                message = message + '+'
+                message = message + ' + '
             elif data[0][j+1] == 0:
                 pass
         all_message = message + '#'
@@ -120,24 +116,33 @@ class Simplex(object):
                 if data[i][j] == 0:
                     message = message + "     "
                 else:
-                    message = message + str(int(data[i][j])) + '*' + v_name[j]
+                    message = message + '%2s' % str(int(data[i][j])) + '*' + '%4s' % v_name[j]
                 if data[i][j + 1] > 0 and (j+1) != (length-1):
                     message = message + '+'
                 elif data[i][j + 1] == 0:
                     pass
-            message = message + ' = ' + str(int(data[i][length-1]))
+            message = message + ' = ' + '%2s' % str(int(data[i][length-1]))
             all_message = all_message + message + "#"
         all_message += '#'
-        all_message = all_message + param + str(value) + '#'
+        all_message = all_message + '%-8s' %param + '%2s' % str(value) + '#'
         result = ''
         print(base_list)
         print(base_value)
         for i in zip(base_list, base_value):
-            result += v_name[i[0]] +' = ' + str(i[1]) + '#'
+            result += '%-4s' % v_name[i[0]] + ' = ' + '%5s' % str(i[1]) + '#'
         all_message = all_message + result
         print(all_message)
         return all_message
 
+def getString(s,d):
+    str = '产量:'
+    for i in s:
+        str += '%4s %3d\t' % (i[0], i[1])
+    str += '\n'+'销量:'
+    for i in d:
+        str += '%4s %3d\t' % (i[0], i[1])
+    str += '\n'
+    return str
 
 @app.route('/simplexMin', methods=['GET', 'POST'])
 def simplex_min():
@@ -193,6 +198,56 @@ def simplex_max():
         'message': '这里你看到的是单纯形法',
         "data": value,
         "info": info
+    }
+    # cur.close()
+    # conn.close()
+    response = make_response(jsonify(result))
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'OPTIONS,HEAD,GET,POST'
+    response.headers['Access-Control-Allow-Headers'] = 'x-requested-with'
+    response.status = "200"
+    return response
+
+
+@app.route('/transportation', methods=['GET', 'POST'])
+def transportation():
+    params = request.get_data()
+    json_data = json.loads(params.decode('utf-8'))
+    metaData = json_data["meta"]
+    print(metaData)
+    rawMetaData = metaData.replace('#', '\n')
+    filename = './transportation.txt'
+    with open(filename, 'w') as file_object:
+        file_object.write(rawMetaData)
+
+    dataMax = np.loadtxt(filename, dtype=np.float)
+    print(dataMax)
+
+    (width, length) = dataMax.shape
+    # 产地数组
+    product = ['A' + str(i) for i in range(1, width)]
+    print(product)
+    # 销地名称数组
+    sale = ['B' + str(i) for i in range(1, length)]
+    print(sale)
+    s = [(product[i], dataMax[i, length - 1]) for i in range(width - 1)]
+    d = [(sale[i], dataMax[width - 1, i]) for i in range(length - 1)]
+    c = dataMax[:width - 1, :length - 1]
+    info = getString(s, d)
+    print(s)
+    print(d)
+    print(c)
+    # s = [('A1', 14), ('A2', 27), ('A3', 19)]
+    # d = [('B1', 22), ('B2', 13), ('B3', 12), ('B4', 13)]
+    # c = [[6, 7, 5, 3], [8, 4, 2, 7], [5, 9, 10, 6]]
+    p = tp.TransportationProblem(s, d, c)
+    r = p.solve()
+    s = r.__str__()
+    info += s
+    result = {
+        'status': 20000,
+        'message': '这里你看到的是单纯形法',
+        "info": info,
     }
     # cur.close()
     # conn.close()

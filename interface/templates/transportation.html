@@ -145,7 +145,29 @@
 				$('textarea').val('')
 			}
 			function tranProblem() {
-
+				console.log($('#param').val())
+				var rawText=$('#param').val()
+				let reg=new RegExp('\n','g')    //g代表全部
+				var resultText = rawText.replace(reg, '#')
+				console.log(resultText)
+				var params={
+					meta:resultText
+				}
+				$.ajax({
+					type: "POST",
+					url: 'http://127.0.0.1:5000/transportation',
+					contentType: "application/json; charset=utf-8",
+					data: JSON.stringify(params),
+					success: function (resp) {
+						// data.success(resp)
+						// console.log(resp["data"])
+						console.log(resp["info"])
+						$('#resultArea').val(resp["info"])
+					},
+					error: function (err) {
+						// data.error(err)
+					}
+				})
 			}
 			function simplexMin() {
 				console.log($('#param').val())
