@@ -5,10 +5,8 @@
 import numpy as np
 
 from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS
 import json
-import transportation_problem as tp
-
+from trans import trans
 app = Flask(__name__)
 
 
@@ -181,26 +179,20 @@ def simplex_max():
     params = request.get_data()
     json_data = json.loads(params.decode('utf-8'))
     metaData = json_data["meta"]
-    print(metaData)
     rawMetaData = metaData.replace('#', '\n')
     filename = './simplex.txt'
     with open(filename, 'w') as file_object:
         file_object.write(rawMetaData)
-
     dataMax = np.loadtxt(filename, dtype=np.float)
-    print(dataMax)
     value, base_list, base_value = Simplex.max(dataMax)
     dataMax = np.loadtxt(filename, dtype=np.float)
     info = Simplex.formatString(dataMax, 1, value, base_list, base_value)
-    print(info)
     result = {
         'status': 20000,
         'message': '这里你看到的是单纯形法',
         "data": value,
         "info": info
     }
-    # cur.close()
-    # conn.close()
     response = make_response(jsonify(result))
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'OPTIONS,HEAD,GET,POST'
@@ -214,43 +206,34 @@ def transportation():
     params = request.get_data()
     json_data = json.loads(params.decode('utf-8'))
     metaData = json_data["meta"]
-    print(metaData)
+    # print(metaData)
     rawMetaData = metaData.replace('#', '\n')
     filename = './transportation.txt'
     with open(filename, 'w') as file_object:
         file_object.write(rawMetaData)
 
     dataMax = np.loadtxt(filename, dtype=np.float)
-    print(dataMax)
+    # print(dataMax)
 
     (width, length) = dataMax.shape
     # 产地数组
     product = ['A' + str(i) for i in range(1, width)]
-    print(product)
+    # print(product)
     # 销地名称数组
     sale = ['B' + str(i) for i in range(1, length)]
-    print(sale)
+    # print(sale)
     s = [(product[i], dataMax[i, length - 1]) for i in range(width - 1)]
     d = [(sale[i], dataMax[width - 1, i]) for i in range(length - 1)]
-    c = dataMax[:width - 1, :length - 1]
+    # c = dataMax[:width - 1, :length - 1]
+    re = trans(tuple(product), tuple(sale), dataMax)
     info = getString(s, d)
-    print(s)
-    print(d)
-    print(c)
-    # s = [('A1', 14), ('A2', 27), ('A3', 19)]
-    # d = [('B1', 22), ('B2', 13), ('B3', 12), ('B4', 13)]
-    # c = [[6, 7, 5, 3], [8, 4, 2, 7], [5, 9, 10, 6]]
-    p = tp.TransportationProblem(s, d, c)
-    r = p.solve()
-    s = r.__str__()
-    info += s
+    # print(s)
+    info += re
     result = {
         'status': 20000,
         'message': '这里你看到的是单纯形法',
         "info": info,
     }
-    # cur.close()
-    # conn.close()
     response = make_response(jsonify(result))
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'OPTIONS,HEAD,GET,POST'
@@ -264,17 +247,7 @@ if __name__ == '__main__':
         第一行为数据
         其余行为约束
     '''
-    # data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
-    # value = Simplex.min(data_min)
-    # print(value)
-    # data_max = np.loadtxt("data-3.1.3.txt", dtype=np.float)
-    # value = Simplex.max(data_max)
-    # print(value)
-
-    # data_min = np.loadtxt("data-3.1.2.txt", dtype=np.float)
     data_max = np.loadtxt("data-3.1.3.txt", dtype=np.float)
-    # value = Simplex.max(data_max)
-    # print(data_min)
     value, base_list, base_value = Simplex.max(data_max)
     info = Simplex.formatString(data_max, 1, value, base_list, base_value)
     print(info)

@@ -162,8 +162,6 @@
 					contentType: "application/json; charset=utf-8",
 					data: JSON.stringify(params),
 					success: function (resp) {
-						// data.success(resp)
-						// console.log(resp["data"])
 						console.log(resp["info"])
 						var infor = resp["info"]
 						let reg=new RegExp('#','g')//g代表全部
